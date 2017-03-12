@@ -1,6 +1,10 @@
 #!/bin/bash
 # Chef server installation and configuration
 
+user=admin
+password=explorer
+organization=lan
+
 #Downloading and installing of chef server package
 scp mgmt.lan:/chef/chef-server-core* .
 yum localinstall chef-server-core* -y
@@ -12,10 +16,10 @@ hostnamectl set-hostname chef.lan
 chef-server-ctl reconfigure
 
 #Creating of admin user
-chef-server-ctl user-create admin Sergei Saenko sergei.saenko@hotmail.com 'explorer' --filename /etc/chef/admin.pem
+chef-server-ctl user-create $user Sergei Saenko sergei.saenko@hotmail.com '$password' --filename /etc/chef/admin.pem
 
 #Creating of organization
-chef-server-ctl org-create lan 'Home Lan' --association_user admin --filename /etc/chef/lan-validator.pem
+chef-server-ctl org-create $organization 'Home Lan' --association_user admin --filename /etc/chef/lan-validator.pem
 
 #Chef Manage installation
 chef-server-ctl install chef-manage
@@ -37,4 +41,6 @@ echo ""
 echo ""
 echo "ALL DONE!!!"
 echo ""
-echo ""
+echo "Chef Server Login: 	    $user"
+echo "Chef Server Password:	    $password"
+echo "Chef Server Organization:	$organization"

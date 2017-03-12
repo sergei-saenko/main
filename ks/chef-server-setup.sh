@@ -5,6 +5,9 @@
 scp mgmt.lan:/chef/chef-server-core* .
 yum localinstall chef-server-core* -y
 
+#Hostname of ChefServer
+hostnamectl set-hostname chef.lan
+
 #Chef server configuration
 chef-server-ctl reconfigure
 

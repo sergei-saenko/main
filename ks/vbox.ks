@@ -12,7 +12,7 @@ cdrom
 text
 # Run the Setup Agent on first boot
 firstboot --enable
-ignoredisk --only-use=vda
+ignoredisk --only-use=sda
 # Keyboard layouts
 keyboard --vckeymap=us --xlayouts='us'
 # System language
@@ -30,10 +30,10 @@ services --enabled="chronyd"
 # System timezone
 timezone Europe/Kiev --isUtc --ntpservers=0.centos.pool.ntp.org,1.centos.pool.ntp.org,2.centos.pool.ntp.org,3.centos.pool.ntp.org
 # System bootloader configuration
-bootloader --append=" crashkernel=auto" --location=mbr --boot-drive=vda
+bootloader --append=" crashkernel=auto" --location=mbr --boot-drive=sda
 autopart --type=lvm
 # Partition clearing information
-clearpart --all --initlabel --drives=vda
+clearpart --all --initlabel --drives=sda
 eula --agreed
 reboot
 
@@ -56,6 +56,6 @@ kexec-tools
 /usr/bin/yum install epel-release -y
 /usr/bin/yum install yum-utils -y
 /usr/bin/yum-config-manager --disablerepo=epel
-/usr/bin/yum install expect wget htop vim bash-completion hdparm git -y
+/usr/bin/yum install expect wget htop vim bash-completion hdparm git unzip -y
 
 %end

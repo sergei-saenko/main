@@ -54,6 +54,6 @@ kexec-tools
 /usr/bin/yum install epel-release -y
 /usr/bin/yum install yum-utils -y
 /usr/bin/yum-config-manager --disablerepo=epel
-/usr/bin/yum install expect wget htop vim bash-completion hdparm open-vm-tools git -y
+/usr/bin/yum install expect unzip wget htop vim bash-completion hdparm open-vm-tools git -y
 
 %end

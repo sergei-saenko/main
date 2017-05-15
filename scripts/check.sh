@@ -4,7 +4,7 @@ VERSION=0.3
 HOST=c3
 USER=root
 PASS=explorer
-mysql="/usr/bin/mysql -h $HOST -u$USER -p$PASS -e"
+mysql="/usr/bin/mysql -u$USER -p$PASS -e"
 
 #1 select server/group_of_servers
 #2 select admin

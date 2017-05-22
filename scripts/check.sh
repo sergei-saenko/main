@@ -25,7 +25,7 @@ case $1 in
 			 on ser.customer_id=cus.customer_id  
 			join systems sys 
 			 on ser.system_id=sys.system_id
-			where ser.name = '$2';"
+			where ser.name like '$2';"
 	;;
 
 	l|list)	FILE="$2"

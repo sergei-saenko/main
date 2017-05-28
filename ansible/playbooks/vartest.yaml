@@ -1,0 +1,14 @@
+--- # Variable test list
+- hosts: '{{host}}'
+  remote_user: faktor
+  become: yes
+  become_method: sudo
+  connection: ssh
+  gather_facts: '{{gather}}'
+  vars:
+    host: centos
+    gather: yes
+    pkg: telnet
+  tasks:
+  - name: Install software - '{{pkg}}'
+    yum: name='{{pkg}}' state=absent

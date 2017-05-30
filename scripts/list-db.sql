@@ -26,7 +26,7 @@ and ser.customer_id=cus.customer_id
 and ser.system_id=sys.system_id; select @stop := curtime(4); select @start;select @stop;
 
 
-select @start := curtime(4);select ser.server_name as HOSTNAME, ad1.surname as 'PRIMARY', ad2.surname as 'SECONDARY',
+select ser.name as HOSTNAME, ad1.surname as 'PRIMARY', ad2.surname as 'SECONDARY',
 sys.system_id as 'SYSTEM NUM',sys.system_name as 'SYSTEM NAME', cus.name as CUSTOMER  
 from servers ser 
 join admins ad1 
@@ -36,7 +36,9 @@ on ser.secondary_admin_id=ad2.admin_id
 join customers cus 
 on ser.customer_id=cus.customer_id  
 join systems sys 
-on ser.system_id=sys.system_id;select @stop := curtime(4); select @start;select @stop;
+on ser.system_id=sys.system_id
+join tab1
+on ser.name=tab1.name;
 
 
 select cus.name as CUSTOMER,count(ser.name) AMOUNT
@@ -53,6 +55,15 @@ on ser.primary_admin_id=ad.admin_id
 group by ADMIN
 order by AMOUNT desc;
 
-
+select ser.name as HOSTNAME, ad1.surname as 'PRIMARY', 
+ad2.surname as 'SECONDARY',sys.system_id as 'SYSTEM NUM',
+sys.system_name as 'SYSTEM NAME', cus.name as CUSTOMER
+from servers ser,tbl1495579831 tbl,admins ad1,admins ad2,
+customers cus,systems sys
+where ser.name=tbl.name
+and ser.primary_admin_id=ad1.admin_id
+and ser.secondary_admin_id=ad2.admin_id
+and ser.customer_id=cus.customer_id
+and ser.system_id=sys.system_id;
 
 

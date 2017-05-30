@@ -1,28 +1,39 @@
 --- # Variable test list
-- hosts: jenkins
+- hosts: jenkins2
   remote_user: faktor
   become: yes
   tasks:
-# JDK installation
-  - name: Installation of JDK
-    yum: name=java-1.8.0-openjdk state=latest
-
-# Jenkins installation
-  - name: Install Jenkins repo
+  - name: Install repo, GPG key and update all package in the system
     get_url: url=http://pkg.jenkins-ci.org/redhat/jenkins.repo dest=/etc/yum.repos.d/jenkins.repo
-  - name: Install GPG key for Jenkins repository
-    rpm_key: key=https://jenkins-ci.org/redhat/jenkins-ci.org state=present
-  - name: Update all packages to latest version
-    yum: name='*' state=latest
-  - name: Installation of Jenkins
-    yum: name=jenkins state=present
+  - rpm_key: key=https://jenkins-ci.org/redhat/jenkins-ci.org state=present
+  - yum: name='*' state=latest
+  - name: Installation of Jenkins/Java/FirewallD
+    yum: name={{item}} state=latest 
+    with_items:
+        - jenkins
+        - firewalld
+        - java-1.8.0-openjdk
+ 
+  - name: firewall port opening
+    firewalld: service={{item}} state=enabled permanent=true zone=public immediate=yes
+    with_items:
+        - http
+        - ssh
+
+  - name: port redirection
+    command: /usr/bin/firewall-cmd --zone=public --add-forward-port=port=80:proto=tcp:toport=8080 --permanent
+
     notify:
-    - jenkins service on
+    - jenkins service enabled/on
+    - firewalld service enabled/on
+
+
+
+# Handlers 
   handlers:
-  - name: jenkins service on
+  - name: jenkins service enabled/on
     service: name=jenkins enabled=yes state=restarted
 
+  - name: firewalld service enabled/on
+    service: name=firewalld enabled=yes state=restarted
 
-# Firewall installation
-  - name: Installation of FirewallD package
-    yum: name=firewalld state=latest 

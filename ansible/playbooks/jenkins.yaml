@@ -15,12 +15,16 @@
         - firewalld
         - java-1.8.0-openjdk
     notify:
+     - selinux disabled
      - jenkins enabled
      - firewall enabled
      - firewall port opening
      - port redirection
 
   handlers:
+  - name: selinux disabled
+    selinux: state=disabled
+
   - name: jenkins enabled
     service: name=jenkins enabled=yes state=restarted
 

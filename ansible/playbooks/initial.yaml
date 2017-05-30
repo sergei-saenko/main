@@ -4,33 +4,28 @@
   tasks:
   - name: All package upgrade
     yum: name='*' state=latest
-  - name: Additional package installation
-    yum: name={{item}} state=latest update_cache=yes
-    with_items:
-        - firewalld
-        - nmap
-        - htop
-        - bind-utils
-    notify:
-     - selinux disabled
-     - firewall enabled
-     - firewall port opening
-  
-  - name: EPEL repository installation
+   
+  - name: repository installation
     yum_repository: 
-    name: epel 
-    description: EPEL YUM repo 
-    file: epel.repo
-    baseurl: https://download.fedoraproject.org/pub/epel/$releasever/$basearch/
-    mirrorlist: https://mirrors.fedoraproject.org/metalink?repo=epel-7&arch=$basearch
-    enabled: no
+     name: epel  
+     description: EPEL YUM repo 
+     file: epel.repo
+     baseurl: https://download.fedoraproject.org/pub/epel/$releasever/$basearch/
+     mirrorlist: https://mirrors.fedoraproject.org/metalink?repo=epel-7&arch=$basearch
+     enabled: no
+     gpgcheck: no
   
-  - name: NOPASSWD for wheel group in sudoers
-    replace:
-    path: /etc/sudoers
-    regexp: ''^%wheel''
-    replace: '\%wheel  ALL=(ALL)  NOPASSWD: ALL'
-    backup: yes
+  - name: Additional package installation
+    yum: name={{item}} state=latest update_cache=yes enablerepo=epel
+    with_items:
+      - firewalld
+      - nmap
+      - htop
+      - bind-utils
+    notify:
+      - selinux disabled
+      - firewall enabled
+      - firewall port opening
 
   handlers:
   - name: selinux disabled
@@ -42,6 +37,6 @@
   - name: firewall port opening
     firewalld: service={{item}} state=enabled permanent=true zone=public immediate=yes
     with_items:
-        - http
-        - https
-        - ssh
+       - http
+       - https
+       - ssh

@@ -1,0 +1,12 @@
+--- # Example of debug activity
+- hosts: centos
+  remote_user: faktor
+  become: yes
+  become_method: sudo 
+  connection: ssh
+  gather_facts: no
+  tasks:
+  - name: Install telnet package
+    yum: name=telnet state=latest
+  #  register: result
+  #- debug: var=result 

@@ -1,0 +1,45 @@
+--- # Jenkins server configuration playbook
+- hosts: jenkins
+  remote_user: faktor
+  become: yes
+  tasks:
+  - name: Adding Jenkins REPO
+    get_url: url=http://pkg.jenkins-ci.org/redhat/jenkins.repo dest=/etc/yum.repos.d/jenkins.repo
+  - name: Adding Jenkins GPG key
+    rpm_key: key=https://jenkins-ci.org/redhat/jenkins-ci.org state=present
+
+  - name: Installation of Jenkins/Java/FirewallD
+    yum: name={{item}} state=latest update_cache=yes
+    with_items:
+        - jenkins
+        - firewalld
+        - java-1.8.0-openjdk
+    notify:
+     - selinux disabled
+     - jenkins enabled
+     - firewall enabled
+     - firewall port opening
+     - port redirection
+
+  handlers:
+  - name: selinux disabled
+    selinux: state=disabled
+
+  - name: jenkins enabled
+    service: name=jenkins enabled=yes state=restarted
+
+  - name: firewall enabled
+    service: name=firewalld enabled=yes state=restarted
+
+  - name: firewall port opening
+    firewalld: service={{item}} state=enabled permanent=true zone=public immediate=yes
+    with_items:
+        - http
+        - ssh
+
+  - name: port redirection
+    command: chdir=/usr/bin/{{item}}
+    with_items:
+     - firewall-cmd --zone=public --add-forward-port=port=80:proto=tcp:toport=8080 --permanent 
+     - firewall-cmd --reload
+

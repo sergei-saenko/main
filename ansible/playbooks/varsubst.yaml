@@ -1,0 +1,10 @@
+--- # Variable test list
+- hosts: '{{host}}'
+  remote_user: faktor
+  become: yes
+  become_method: sudo
+  connection: ssh
+  gather_facts: '{{gather}}'
+  tasks:
+  - name: Install software - '{{pkg}}'
+    yum: name='{{pkg}}' state=present

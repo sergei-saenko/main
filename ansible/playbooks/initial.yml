@@ -1,5 +1,5 @@
-- hosts: new
-  remote_user: faktor
+- hosts: all
+  remote_user: sergei
   become: yes
   tasks:
   - name: All package upgrade

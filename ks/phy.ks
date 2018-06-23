@@ -3,9 +3,9 @@
 auth --enableshadow --passalgo=sha512
 # Use network installation
 install
-#url --url="http://mirror.centos.org/centos/7/os/x86_64"
+url --url="http://mirror.centos.org/centos/7/os/x86_64"
 # Use cdrom installation
-cdrom
+# cdrom
 # Use graphical install
 # graphical
 # Use text install

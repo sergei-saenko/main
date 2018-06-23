@@ -20,7 +20,6 @@
      - firewall enabled
      - firewall port opening
      - port redirection
-
   handlers:
   - name: selinux disabled
     selinux: state=disabled

@@ -1,0 +1,75 @@
+- hosts: db
+  remote_user: sergei
+  become: yes
+  tasks:
+   - name: All package upgrade
+     yum: name='*' state=latest
+   
+   - name: EPEL
+     yum: name=epel-release state=latest update_cache=yes
+  
+   - name: Additional package installation
+     yum: name={{item}} state=latest enablerepo=epel
+     with_items:
+      - firewalld
+      - nmap
+      - htop
+      - bind-utils
+      - expect
+      - mariadb-server
+      - mariadb
+     notify:
+      - Selinux disabled
+      - Firewall enabled
+      - Firewall port opening
+      - MySQL enabled
+      - MySQL secure installation
+
+  handlers:
+   - name: Selinux disabled
+     selinux: state=disabled
+
+   - name: Firewall enabled
+     service: name=firewalld enabled=yes state=restarted
+
+   - name: MySQL enabled
+     service: name=mariadb enabled=yes state=running
+
+   - name: Firewall port opening
+     firewalld: service={{item}} state=enabled permanent=true zone=public immediate=yes
+     with_items:
+       - mysql
+       - ssh
+
+   - name: MySQL secure installation
+     shell: |
+          set timeout 10
+          spawn mysql_secure_installation
+
+          expect "Enter current password for root (enter for none):"
+          send "\r"
+
+          expect "Set root password?"
+          send "y\r"
+          
+          expect "New password:"
+          send "explorer\r"
+
+          expect "Re-enter new password:"
+          send "explorer\r"
+
+          expect "Remove anonymous users?"
+          send "y\r"
+
+          expect "Disallow root login remotely?"
+          send "y\r"
+
+          expect "Remove test database and access to it?"
+          send "y\r"
+
+          expect "Reload privilege tables now?"
+          send "y\r"
+
+          expect eof
+     args:
+      executable: /usr/bin/expect

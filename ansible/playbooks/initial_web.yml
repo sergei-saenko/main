@@ -1,0 +1,36 @@
+- hosts: web
+  remote_user: sergei
+  become: yes
+  tasks:
+   - name: All package upgrade
+     yum: name='*' state=latest
+   
+   - name: EPEL
+     yum: name=epel-release state=latest update_cache=yes
+  
+   - name: Additional package installation
+     yum: name={{item}} state=latest enablerepo=epel
+     with_items:
+      - firewalld
+      - nmap
+      - htop
+      - bind-utils
+      - expect
+     notify:
+      - selinux disabled
+      - firewall enabled
+      - firewall port opening
+
+  handlers:
+   - name: selinux disabled
+     selinux: state=disabled
+
+   - name: firewall enabled
+     service: name=firewalld enabled=yes state=restarted
+
+   - name: firewall port opening
+     firewalld: service={{item}} state=enabled permanent=true zone=public immediate=yes
+     with_items:
+       - http
+       - https
+       - ssh

@@ -24,7 +24,7 @@ network  --hostname=localhost.localdomain
 
 # Root password
 rootpw explorer
-user --name faktor --groups wheel --password explorer
+user --name sergei --groups wheel --password explorer
 # System services
 services --enabled="chronyd"
 # System timezone
@@ -48,10 +48,18 @@ kexec-tools
 
 %end
 
-%post --nochroot
+%post
+/usr/bin/yum makecache fast
 /usr/bin/yum update -y
 /usr/bin/yum install epel-release -y
-/usr/bin/yum install htop vim bash-completion hdparm open-vm-tools -y
-grubby --update-kernel=ALL --args="console=ttyS0"
-reboot
+/usr/bin/yum install yum-utils -y
+/usr/bin/yum-config-manager --disablerepo=epel
+/usr/bin/yum install expect wget htop vim bash-completion hdparm git unzip -y
+/usr/sbin/sed -i 's/SELINUX=enforcing/SELINUX=permissive/g' /etc/selinux/config
+/usr/sbin/sed -i '/\[main\a dns=none]' /etc/NetworkManager/NetworkManager.conf
+/usr/sbin/setenforce 0
+/usr/bin/systemctl restart NetworkManager.service
+/usr/sbin/echo -e 'nameserver 8.8.8.8\nnameserver 8.8.4.4' > /etc/resolv.conf
+
+
 %end

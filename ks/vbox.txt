@@ -24,7 +24,7 @@ network  --hostname=localhost.localdomain
 
 # Root password
 rootpw explorer
-user --name faktor --groups wheel --password explorer
+user --name sergei --groups wheel --password explorer
 # System services
 services --enabled="chronyd"
 # System timezone

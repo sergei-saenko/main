@@ -21,6 +21,9 @@ NEUTRAL="\033[0;39;49m"
 
 #Script block
 username=et0529
+#!/bin/bash
+#AUTHOR=Sergei Saenko
+#EDITORS=Sergei Saenko
 vpngateway=vpn.corpcommon.com
 vpnexec=/opt/cisco/anyconnect/bin/vpn
 case $1 in
@@ -29,13 +32,13 @@ case $1 in
 		   read RSA
                    echo -e "\n"
                    echo -e ${BLUE}
-		   echo -e "$username\n$RSA\ny" | $vpnexec -s $1 $vpngateway
+		   echo -e "$username\n$RSA\ny" | $vpnexec -s co $vpngateway
 	;;
 
 	disconnect|d) echo -e ${BLUE}
 		      $vpnexec $1
 	;;
-	
+
 	state|s) echo -e ${BLUE}
 		 $vpnexec state
 	;;

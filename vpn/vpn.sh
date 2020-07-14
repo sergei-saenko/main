@@ -21,9 +21,6 @@ NEUTRAL="\033[0;39;49m"
 
 #Script block
 username=et0529
-#!/bin/bash
-#AUTHOR=Sergei Saenko
-#EDITORS=Sergei Saenko
 vpngateway=vpn.corpcommon.com
 vpnexec=/opt/cisco/anyconnect/bin/vpn
 case $1 in

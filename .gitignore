@@ -1,7 +1,14 @@
+<<<<<<< HEAD
 .DS_Store
 .DS_Store?
 ._* .Trashes
 ehthumbs.db
+=======
+.DS_Store 
+.DS_Store? 
+._* .Trashes 
+ehthumbs.db 
+>>>>>>> ce974ff945135bd185c3d2cb0716a122f3f7d650
 Thumbs.db
 *.iso
 *~

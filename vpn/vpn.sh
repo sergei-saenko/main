@@ -19,31 +19,46 @@ UKR="\033[1;37;42m"
 GRY="\033[1;33;44m"
 NEUTRAL="\033[0;39;49m"
 
-#Script block
-username=et0529
-vpngateway=vpn.corpcommon.com
+
 vpnexec=/opt/cisco/anyconnect/bin/vpn
+
+function fn_choice {
 case $1 in
-	connect|c) echo
-		   echo -en "${YELLOW}Enter your RSA:${NC}${GREEN} "
-		   read RSA
+        connect|c) echo
+                   echo -en "${YELLOW}Enter your RSA:${NC}${GREEN} "
+                   read PASS 
                    echo -e "\n"
                    echo -e ${BLUE}
-		   echo -e "$username\n$RSA\ny" | $vpnexec -s $1 $vpngateway
-	;;
+                   echo -e "$username\n$PASS\ny" | $vpnexec -s co $vpngateway
+        ;;
 
-	disconnect|d) echo -e ${BLUE}
-		      $vpnexec $1
-	;;
-	
-	state|s) echo -e ${BLUE}
-		 $vpnexec state
-	;;
+        disconnect|d) echo -e ${BLUE}
+                      $vpnexec $1
+        ;;
 
-	*) echo
-	   $vpnexec -v|grep "Secure Mobility Client"|grep version
+        state|s) echo -e ${BLUE}
+                 $vpnexec state
+        ;;
+
+        *) echo
+           $vpnexec -v|grep "Secure Mobility Client"|grep version
            echo -e "\nUsage: vpn connect(c)|disconnect(d)|state(s)\n"
-	;;
+        ;;
 esac
+}
 
+
+if [ "$2" = "infopulse" ]
+then
+username=sergei.saenko
+vpngateway=webvpn3.infopulse.com
+fn_choice
+elif [ "$2" = "tie" ]
+then
+username=et0529
+vpngateway=vpn.corpcommon.com
+fn_choice
+else
+echo "wrong value"
+fi
 

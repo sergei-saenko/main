@@ -1,7 +1,7 @@
 #!/bin/bash
 #AUTHOR=Sergei Saenko
-#EDITORS=Sergei Saenko
-#DATE=05.07.2019
+#CONTRIBUTORS=Sergei Saenko
+#DATE=23.07.2020
 #Advice: copy this script to your machine's (Linux/MacOSX) "/usr/local/bin" directory
 #Info: tested with Cisco AnyConnect Secure Mobility Client (version 4.2.04039)
 
@@ -21,19 +21,76 @@ NEUTRAL="\033[0;39;49m"
 
 
 vpnexec=/opt/cisco/anyconnect/bin/vpn
+PROCESS="`ps -ef|grep ExitOnForwardFailure|grep -v grep|awk '{print $2}'`"
 
-function fn_choice {
+if [ "$2" = "infopulse" ]
+ then
+  username=sergei.saenko
+  vpngateway=webvpn3.infopulse.com
+elif [ "$2" = "tie" ]
+ then
+  username=et0529
+  vpngateway=vpn.corpcommon.com
+  mgmt_pass="Hipe2020"
+elif [ "$1" = "d" ]
+ then
+  echo
+else
+  echo
+fi
+
 case $1 in
         connect|c) echo
-                   echo -en "${YELLOW}Enter your RSA:${NC}${GREEN} "
-                   read PASS 
+                   echo -en "${YELLOW}Enter your PASS or RSA:${NC}${GREEN} "
+                   read -s PASS 
                    echo -e "\n"
                    echo -e ${BLUE}
                    echo -e "$username\n$PASS\ny" | $vpnexec -s co $vpngateway
+                   if [ "$2" = "tie" ]
+                   then
+                        echo -e "${BOLD_WHITE}COS Tunnel: connecting...\n"	
+			sleep 1
+			if [ -n "$PROCESS" ]	
+			  then echo -e "\n${BOLD_WHITE}COS Tunnel is already running: ${GREEN}$PROCESS\n"
+			 else echo -e "\n${BLUE}Starting COS tunel..."
+			 /usr/bin/expect <<- DONE
+			 set timeout -1
+			 spawn ssh $username@ilp-alfine -q -f -n -o ExitOnForwardFailure=yes -C -2 -N -D 127.0.0.1:12345
+			  expect "et0529@ilp-alfine's password:"
+			  send -- "$mgmt_pass"
+			  send -- "\r"
+			  expect eof
+			DONE
+			echo -e "\n${NEUTRAL}COS Tunnel has started: ${GREEN}`ps -ef|grep ExitOnForwardFailure|grep -v grep|awk '{print $2}'`\n"
+			fi
+                   else
+                    echo
+                   fi 
         ;;
 
         disconnect|d) echo -e ${BLUE}
-                      $vpnexec $1
+                      vpn_profile=`echo "stats" | $vpnexec -s|grep 'Profile Name'|awk '{print $3}'`
+                      if [ "$vpn_profile" = "vpn-corp.xml" ]
+                      then
+                        echo -e "${BOLD_WHITE}COS Tunnel: disconecting...\n"
+			sleep 1
+			if [ -n "$PROCESS" ]
+			 then /bin/kill -9 $PROCESS
+			 echo -e "${NEUTRAL}COS Tunnel is closed\n"
+                         echo -e ${BLUE}
+                         $vpnexec $1
+			else 
+                          echo -e "${NEUTRAL}COS Tunnel is not running\n"
+                          echo -e ${BLUE}
+                          $vpnexec $1
+			fi
+                      elif [ "$vpn_profile" = "RDP-PROFILE-CRO1.xml" ]
+                       then
+                       echo -e ${BLUE}
+                        $vpnexec $1
+                      else
+                       echo
+                      fi
         ;;
 
         state|s) echo -e ${BLUE}
@@ -45,20 +102,3 @@ case $1 in
            echo -e "\nUsage: vpn connect(c)|disconnect(d)|state(s)\n"
         ;;
 esac
-}
-
-
-if [ "$2" = "infopulse" ]
-then
-username=sergei.saenko
-vpngateway=webvpn3.infopulse.com
-fn_choice
-elif [ "$2" = "tie" ]
-then
-username=et0529
-vpngateway=vpn.corpcommon.com
-fn_choice
-else
-echo "wrong value"
-fi
-

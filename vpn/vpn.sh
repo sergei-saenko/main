@@ -20,6 +20,15 @@ GRY="\033[1;33;44m"
 NEUTRAL="\033[0;39;49m"
 
 
+#Test notification block
+echo -e ${GREEN}
+echo "Test mode.
+To-do:
++ status function 
++ selector mode
++ file store for credential"
+echo -e ${NC}
+
 vpnexec=/opt/cisco/anyconnect/bin/vpn
 PROCESS="`ps -ef|grep ExitOnForwardFailure|grep -v grep|awk '{print $2}'`"
 
@@ -31,7 +40,8 @@ elif [ "$2" = "tie" ]
  then
   username=et0529
   vpngateway=vpn.corpcommon.com
-  mgmt_pass="Hipe2020"
+  tunel_host=ilp-alfine
+  mgmt_pass="!Nova.2020"
 elif [ "$1" = "d" ]
  then
   echo
@@ -41,27 +51,29 @@ fi
 
 case $1 in
         connect|c) echo
+                   echo -e "${BLUE}Cisco AnyConnect VPN${NC}\n"
                    echo -en "${YELLOW}Enter your PASS or RSA:${NC}${GREEN} "
                    read -s PASS 
                    echo -e "\n"
                    echo -e ${BLUE}
                    echo -e "$username\n$PASS\ny" | $vpnexec -s co $vpngateway
+                   echo -e ${NC}
                    if [ "$2" = "tie" ]
                    then
-                        echo -e "${BOLD_WHITE}COS Tunnel: connecting...\n"	
+                        echo -e "${BOLD_WHITE}COS SSH Tunnel"	
 			sleep 1
 			if [ -n "$PROCESS" ]	
-			  then echo -e "\n${BOLD_WHITE}COS Tunnel is already running: ${GREEN}$PROCESS\n"
-			 else echo -e "\n${BLUE}Starting COS tunel..."
+			  then echo -e "\n${BOLD_WHITE}COS SSH Tunnel is already running: ${GREEN}$PROCESS\n"
+			 else echo -e "\n${NEUTRAL}COS SSH Tunnel: authentication..."
 			 /usr/bin/expect <<- DONE
 			 set timeout -1
-			 spawn ssh $username@ilp-alfine -q -f -n -o ExitOnForwardFailure=yes -C -2 -N -D 127.0.0.1:12345
+			 spawn ssh $username@$tunel_host -q -f -n -o ExitOnForwardFailure=yes -C -2 -N -D 127.0.0.1:12345
 			  expect "et0529@ilp-alfine's password:"
 			  send -- "$mgmt_pass"
 			  send -- "\r"
 			  expect eof
 			DONE
-			echo -e "\n${NEUTRAL}COS Tunnel has started: ${GREEN}`ps -ef|grep ExitOnForwardFailure|grep -v grep|awk '{print $2}'`\n"
+			echo -e "\n${NEUTRAL}COS SSH Tunnel: has started, PID: ${GREEN}`ps -ef|grep ExitOnForwardFailure|grep -v grep|awk '{print $2}'`\n"
 			fi
                    else
                     echo
@@ -72,15 +84,15 @@ case $1 in
                       vpn_profile=`echo "stats" | $vpnexec -s|grep 'Profile Name'|awk '{print $3}'`
                       if [ "$vpn_profile" = "vpn-corp.xml" ]
                       then
-                        echo -e "${BOLD_WHITE}COS Tunnel: disconecting...\n"
+                        echo -e "${BOLD_WHITE}COS SSH Tunnel: disconecting...\n"
 			sleep 1
 			if [ -n "$PROCESS" ]
 			 then /bin/kill -9 $PROCESS
-			 echo -e "${NEUTRAL}COS Tunnel is closed\n"
+			 echo -e "${NEUTRAL}COS SSH Tunnel: ${BOLD_WHITE}closed\n"
                          echo -e ${BLUE}
                          $vpnexec $1
 			else 
-                          echo -e "${NEUTRAL}COS Tunnel is not running\n"
+                          echo -e "${NEUTRAL}COS SSH Tunnel: ${BOLD_WHITE}not running\n"
                           echo -e ${BLUE}
                           $vpnexec $1
 			fi

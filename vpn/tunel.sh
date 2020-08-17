@@ -1,7 +1,7 @@
 #!/usr/bin/expect -f
 set timeout -1
 set USER "et0529"
-set PASS "!Nimelig.2020"
+set PASS "!Nova.2020"
 
 case $1 in 
 
